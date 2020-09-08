@@ -2,7 +2,8 @@ require 'oystercard.rb'
 
 describe Oystercard do
 
-  let(:oyster) {Oystercard.new}
+  let(:oyster)   {   Oystercard.new  }   
+  let(:liverpool_street)  { double :station }
 
   it  "checks that the balance of oyster card is equal to the defualt" do
   expect(oyster.balance).to eq (15)
@@ -22,31 +23,42 @@ describe Oystercard do
 
   describe 'touch_in' do
     it "checks that the oyster card has been touched in" do
-      oyster.touch_in
-      expect(oyster.in_journey).to eq true
+      oyster.touch_in(liverpool_street)
+      expect(oyster.in_journey?).to eq true
     end
 
     it 'won\'t allow me to touch in if the balance is less than £1' do
       cloyster = Oystercard.new(0)
-      expect { cloyster.touch_in }.to raise_error "Minimum fare is £1"
+      expect { cloyster.touch_in(liverpool_street) }.to raise_error "Minimum fare is £1"
+    end
+
+    it 'remembers the station it touched in at' do
+      oyster.touch_in(liverpool_street)
+      expect(oyster.entry_station).to eq liverpool_street
     end
   end
 
   describe 'touch out' do
     it "checks that the oyster card has been touched out" do
-      oyster.touch_in
+      oyster.touch_in(liverpool_street)
       oyster.touch_out
-      expect(oyster.in_journey).to eq false
+      expect(oyster.in_journey?).to eq false
     end
     it "checks that the balance has been deducted by the minimum fare" do
-      oyster.touch_in
+      oyster.touch_in(liverpool_street)
       expect { oyster.touch_out(Oystercard::MINIMUM_FARE) }.to change{oyster.balance}.by -Oystercard::MINIMUM_FARE
+    end
+
+    it 'forgets the entry station when it touches out' do
+      oyster.touch_in(liverpool_street)
+      oyster.touch_out
+      expect(oyster.entry_station).to eq nil
     end
   end
 
   describe 'in_journey?' do
     it "checks whether the card is in use or not" do
-      oyster.touch_in
+      oyster.touch_in(liverpool_street)
       expect(oyster.in_journey?).to be_truthy
     end
 
