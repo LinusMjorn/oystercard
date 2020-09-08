@@ -16,8 +16,8 @@ describe Oystercard do
     expect {oyster.top_up(76)}.to raise_error "Limit is £90"
   end
 
-  it "checks that you can deduct money from  the balance" do
-    expect {oyster.deduct(10)}.to change{oyster.balance}.by -10
+  it "checks that you can deduct money from the balance" do
+    expect {oyster.touch_out(10)}.to change{oyster.balance}.by -10
   end
 
   describe 'touch_in' do
@@ -27,16 +27,20 @@ describe Oystercard do
     end
 
     it 'won\'t allow me to touch in if the balance is less than £1' do
-      oyster.deduct(15)
-      expect { oyster.touch_in }.to raise_error "Minimum fare is £1"
+      cloyster = Oystercard.new(0)
+      expect { cloyster.touch_in }.to raise_error "Minimum fare is £1"
     end
   end
 
   describe 'touch out' do
-    it "checks that the oyster card gas been touched out" do
+    it "checks that the oyster card has been touched out" do
       oyster.touch_in
       oyster.touch_out
       expect(oyster.in_journey).to eq false
+    end
+    it "checks that the balance has been deducted by the minimum fare" do
+      oyster.touch_in
+      expect { oyster.touch_out(Oystercard::MINIMUM_FARE) }.to change{oyster.balance}.by -Oystercard::MINIMUM_FARE
     end
   end
 
