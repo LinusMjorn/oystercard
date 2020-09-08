@@ -35,6 +35,12 @@ describe Oystercard do
       oyster.touch_in
       expect(oyster.in_journey).to eq true
     end
+
+    it 'won\'t allow me to touch in if the balance is less than £1' do
+      oyster = Oystercard.new
+      oyster.deduct(15)
+      expect { oyster.touch_in }.to raise_error "Minimum fare is £1"
+    end
   end
 
   describe 'touch out' do
@@ -58,5 +64,4 @@ describe Oystercard do
       expect(oyster.in_journey?).to be_falsey
     end
   end
-
-  end
+end
