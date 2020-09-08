@@ -1,4 +1,7 @@
+require 'oystercard.rb'
 
 describe Oystercard do
 
-end
+  expect { Oystercard.to respond_to (:balance) }
+
+  end
