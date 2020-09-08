@@ -2,8 +2,9 @@ require 'oystercard.rb'
 
 describe Oystercard do
 
-  let(:oyster)   {   Oystercard.new  }   
-  let(:liverpool_street)  { double :station }
+  let(:oyster)            {   Oystercard.new  }
+  let(:liverpool_street)  { "liverpool_street"  }
+  let(:bow_road)          { "bow_road"   }
 
   it  "checks that the balance of oyster card is equal to the defualt" do
   expect(oyster.balance).to eq (15)
@@ -18,7 +19,7 @@ describe Oystercard do
   end
 
   it "checks that you can deduct money from the balance" do
-    expect {oyster.touch_out(10)}.to change{oyster.balance}.by -10
+    expect {oyster.touch_out(bow_road, 10)}.to change{oyster.balance}.by -10
   end
 
   describe 'touch_in' do
@@ -41,17 +42,17 @@ describe Oystercard do
   describe 'touch out' do
     it "checks that the oyster card has been touched out" do
       oyster.touch_in(liverpool_street)
-      oyster.touch_out
+      oyster.touch_out(bow_road)
       expect(oyster.in_journey?).to eq false
     end
     it "checks that the balance has been deducted by the minimum fare" do
       oyster.touch_in(liverpool_street)
-      expect { oyster.touch_out(Oystercard::MINIMUM_FARE) }.to change{oyster.balance}.by -Oystercard::MINIMUM_FARE
+      expect { oyster.touch_out(bow_road, Oystercard::MINIMUM_FARE) }.to change{oyster.balance}.by -Oystercard::MINIMUM_FARE
     end
 
     it 'forgets the entry station when it touches out' do
       oyster.touch_in(liverpool_street)
-      oyster.touch_out
+      oyster.touch_out(bow_road)
       expect(oyster.entry_station).to eq nil
     end
   end
@@ -63,8 +64,16 @@ describe Oystercard do
     end
 
     it "checks whether the card is in use or not" do
-      oyster.touch_out
+      oyster.touch_out(bow_road)
       expect(oyster.in_journey?).to be_falsey
     end
   end
+    it "lists the entry and exit stations" do
+      oyster.touch_in(liverpool_street)
+      oyster.touch_out(bow_road)
+      expect(oyster.show_history).to eq "Entry station: liverpool_street, Exit station: bow_road"
+
+    end
+
+
 end
