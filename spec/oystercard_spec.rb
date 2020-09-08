@@ -71,7 +71,7 @@ describe Oystercard do
     it "lists the entry and exit stations" do
       oyster.touch_in(liverpool_street)
       oyster.touch_out(bow_road)
-      expect(oyster.show_history).to eq "Entry station: liverpool_street, Exit station: bow_road"
+      expect { oyster.show_history }.to output("Entry station: liverpool_street, Exit station: bow_road\n").to_stdout
 
     end
 
